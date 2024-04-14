@@ -1,0 +1,18 @@
+{
+  "metadata": {
+    "soundFile": "C:\\Users\\SUJAN MOI\\Desktop\\New folder (2)\\vertual-assistent-backend\\audios\\message_0.wav",
+    "duration": 1.67
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.15, "value": "X" },
+    { "start": 0.15, "end": 0.25, "value": "B" },
+    { "start": 0.25, "end": 0.32, "value": "H" },
+    { "start": 0.32, "end": 0.46, "value": "B" },
+    { "start": 0.46, "end": 0.60, "value": "F" },
+    { "start": 0.60, "end": 0.95, "value": "B" },
+    { "start": 0.95, "end": 1.16, "value": "F" },
+    { "start": 1.16, "end": 1.23, "value": "E" },
+    { "start": 1.23, "end": 1.44, "value": "B" },
+    { "start": 1.44, "end": 1.67, "value": "X" }
+  ]
+}
