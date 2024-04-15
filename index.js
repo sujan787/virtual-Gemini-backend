@@ -18,7 +18,7 @@ app.use(cors());
 const port = 3000;
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("it's running bro");
 });
 
 app.get("/voices", async (req, res) => {
@@ -46,9 +46,18 @@ const lipSyncMessage = async (message) => {
 
   console.log(`Conversion done in ${new Date().getTime() - time}ms`);
 
-  await execCommand(
-    `./bin/rhubarb-l/rhubarb -f json -o audios/message_${message}.json audios/message_${message}.wav -r phonetic`
-  );
+  if (os.platform() === 'linux') {
+    await execCommand(
+      `./bin/rhubarb-l/rhubarb -f json -o audios/message_${message}.json audios/message_${message}.wav -r phonetic`
+    );
+  }
+
+  if (os.platform() === 'win32') {
+    await execCommand(
+      `cd ./bin/rhubarb-w && rhubarb.exe -f json -o ../../audios/message_${message}.json ../../audios/message_${message}.wav -r phonetic`
+    );
+  }
+
   // -r phonetic is faster but less accurate
   console.log(`Lip sync done in ${new Date().getTime() - time}ms`);
 };

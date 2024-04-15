@@ -18,6 +18,8 @@ RUN npm install
 # Copy the rest of the application code to the container
 COPY . .
 
+RUN chmod +x ./bin/rhubarb-l/rhubarb
+
 # Expose the port your app runs on
 EXPOSE 3000
 
