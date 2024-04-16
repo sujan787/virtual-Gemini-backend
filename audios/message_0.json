@@ -1,26 +1,23 @@
 {
   "metadata": {
     "soundFile": "D:\\virtual Gemini\\virtual-Gemini-backend\\audios\\message_0.wav",
-    "duration": 3.34
+    "duration": 1.80
   },
   "mouthCues": [
-    { "start": 0.00, "end": 0.18, "value": "X" },
-    { "start": 0.18, "end": 0.51, "value": "B" },
-    { "start": 0.51, "end": 0.72, "value": "E" },
-    { "start": 0.72, "end": 0.79, "value": "B" },
-    { "start": 0.79, "end": 0.93, "value": "C" },
-    { "start": 0.93, "end": 1.00, "value": "H" },
-    { "start": 1.00, "end": 1.42, "value": "C" },
-    { "start": 1.42, "end": 1.63, "value": "B" },
-    { "start": 1.63, "end": 1.79, "value": "X" },
-    { "start": 1.79, "end": 2.12, "value": "B" },
-    { "start": 2.12, "end": 2.47, "value": "F" },
-    { "start": 2.47, "end": 2.55, "value": "A" },
-    { "start": 2.55, "end": 2.65, "value": "C" },
-    { "start": 2.65, "end": 2.72, "value": "B" },
-    { "start": 2.72, "end": 2.86, "value": "E" },
-    { "start": 2.86, "end": 2.94, "value": "A" },
-    { "start": 2.94, "end": 3.09, "value": "B" },
-    { "start": 3.09, "end": 3.34, "value": "X" }
+    { "start": 0.00, "end": 0.15, "value": "X" },
+    { "start": 0.15, "end": 0.22, "value": "G" },
+    { "start": 0.22, "end": 0.29, "value": "C" },
+    { "start": 0.29, "end": 0.36, "value": "B" },
+    { "start": 0.36, "end": 0.50, "value": "F" },
+    { "start": 0.50, "end": 0.57, "value": "E" },
+    { "start": 0.57, "end": 0.71, "value": "D" },
+    { "start": 0.71, "end": 0.85, "value": "B" },
+    { "start": 0.85, "end": 0.99, "value": "F" },
+    { "start": 0.99, "end": 1.20, "value": "B" },
+    { "start": 1.20, "end": 1.28, "value": "A" },
+    { "start": 1.28, "end": 1.42, "value": "C" },
+    { "start": 1.42, "end": 1.49, "value": "B" },
+    { "start": 1.49, "end": 1.56, "value": "C" },
+    { "start": 1.56, "end": 1.80, "value": "X" }
   ]
 }

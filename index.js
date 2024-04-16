@@ -66,6 +66,8 @@ app.post("/chat", async (req, res) => {
   const userMessage = req.body.message;
   let messages = await getAnswerFromGemini(userMessage);
 
+  console.log(messages)
+
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
     // generate audio file
