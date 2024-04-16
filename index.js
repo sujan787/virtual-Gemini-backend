@@ -73,9 +73,10 @@ app.post("/chat", async (req, res) => {
   }
 
   let messages = await getAnswerFromGemini(userMessage);
+  await createFolder("./audios")
 
-  for (let i = 0; i < messages.length; i++) {
-    try {
+  try {
+    for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
       // generate audio file
       const fileName = `audios/message_${i}.mp3`; // The name of your audio file
@@ -86,10 +87,10 @@ app.post("/chat", async (req, res) => {
 
       message.audio = await audioFileToBase64(fileName);
       message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
-    } catch (error) {
-      const response = await fs.readFile("raw-json/sorry.json", "utf8")
-      return res.send({ messages: JSON.parse(response) })
     }
+  } catch (error) {
+    const response = await fs.readFile("raw-json/sorry.json", "utf8")
+    return res.send({ messages: JSON.parse(response) })
   }
 
   // fs.writeFile('data.json', JSON.stringify(messages), (err) => {
@@ -103,6 +104,26 @@ app.post("/chat", async (req, res) => {
   await deleteFiles('./audios')
   res.send({ messages });
 });
+
+async function createFolder(folderPath) {
+  try {
+    // Check if the folder exists
+    const stats = await fs.stat(folderPath);
+    if (stats.isDirectory()) {
+      return 'Folder already exists';
+    } else {
+      throw new Error('Path exists but is not a folder');
+    }
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      // Directory does not exist, create it
+      await fs.mkdir(folderPath, { recursive: true });
+      return 'Folder created successfully';
+    } else {
+      throw err;
+    }
+  }
+}
 
 const deleteFiles = async (folderPath) => {
   try {
