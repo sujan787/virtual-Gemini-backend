@@ -26,7 +26,7 @@ jobs:
         run: docker container prune -f
       - name: Remove all unused images
         run: docker image prune -f
-      - name: Pull Node Image from the Docker Hub
+      - name: Pull Node Image from the Docker Hub 🙂
         run: docker pull sujan9748/virtual_gemini_backend:latest
       - name: Delete Old Node Container
         run: docker rm -f GeminiNodeContainer
