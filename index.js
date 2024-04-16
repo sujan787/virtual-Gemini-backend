@@ -7,6 +7,7 @@ import { promises as fs } from "fs";
 import voice from "elevenlabs-node";
 import os from "os"
 import path from 'path';
+import { getData, setData } from "./services/redis_service.js";
 
 
 dotenv.config();
@@ -66,6 +67,11 @@ const lipSyncMessage = async (message) => {
 
 app.post("/chat", async (req, res) => {
   const userMessage = req.body.message;
+ 
+  const response = await getData(`messages:${userMessage}`);
+  if (response) {
+    return res.send(response)
+  }
 
   if (userMessage == "@greeting") {
     const response = await fs.readFile("raw-json/greeting.json", "utf8")
@@ -102,6 +108,7 @@ app.post("/chat", async (req, res) => {
   // });
 
   await deleteFiles('./audios')
+  await setData(`messages:${userMessage}`, { messages }, 3600)
   res.send({ messages });
 });
 
