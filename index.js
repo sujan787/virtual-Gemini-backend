@@ -6,10 +6,12 @@ import express from "express";
 import { promises as fs } from "fs";
 import voice from "elevenlabs-node";
 import os from "os"
+import path from 'path';
+
 
 dotenv.config();
 const genAI = new GoogleGenerativeAI("AIzaSyApGW9OFoJC9q87xVqedKwqqR2AM82Qfg4");
-const elevenLabsApiKey = "686942150665dfdeba8f5431077a67c0";
+const elevenLabsApiKey = "a01a1d868e9c23c649cd16fb3f909b0a";
 const voiceID = "21m00Tcm4TlvDq8ikWAM";
 
 const app = express();
@@ -64,29 +66,63 @@ const lipSyncMessage = async (message) => {
 
 app.post("/chat", async (req, res) => {
   const userMessage = req.body.message;
-  let messages = await getAnswerFromGemini(userMessage);
 
-  console.log(messages)
-
-  for (let i = 0; i < messages.length; i++) {
-    const message = messages[i];
-    // generate audio file
-    const fileName = `audios/message_${i}.mp3`; // The name of your audio file
-    const textInput = message.text; // The text you wish to convert to speech
-    const res = await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput);
-    // generate lipsync
-    await lipSyncMessage(i);
-
-    message.audio = await audioFileToBase64(fileName);
-    message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
+  if (userMessage == "@greeting") {
+    const response = await fs.readFile("raw-json/greeting.json", "utf8")
+    return res.send({ messages: JSON.parse(response) })
   }
 
+  let messages = await getAnswerFromGemini(userMessage);
+
+  for (let i = 0; i < messages.length; i++) {
+    try {
+      const message = messages[i];
+      // generate audio file
+      const fileName = `audios/message_${i}.mp3`; // The name of your audio file
+      const textInput = message.text; // The text you wish to convert to speech
+      await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput);
+      // generate lipsync
+      await lipSyncMessage(i);
+
+      message.audio = await audioFileToBase64(fileName);
+      message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
+    } catch (error) {
+      const response = await fs.readFile("raw-json/sorry.json", "utf8")
+      return res.send({ messages: JSON.parse(response) })
+    }
+  }
+
+  // fs.writeFile('data.json', JSON.stringify(messages), (err) => {
+  //   if (err) {
+  //     console.error('Error writing file:', err);
+  //     return;
+  //   }
+  //   console.log('Data saved successfully!');
+  // });
+
+  await deleteFiles('./audios')
   res.send({ messages });
 });
 
+const deleteFiles = async (folderPath) => {
+  try {
+    const files = await fs.readdir(folderPath);
+    for (const file of files) {
+      const filePath = path.join(folderPath, file);
+      console.log(filePath)
+      await fs.unlink(filePath);
+      console.log(`Deleted ${filePath}`);
+    }
+
+    console.log('All files deleted successfully');
+  } catch (error) {
+    console.error('Error deleting files:', error);
+  }
+}
+
 const getAnswerFromGemini = async (message) => {
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-  const prompt = ` You are a virtual girlfriend and your name is marcy.
+  const prompt = `You are a virtual assistant girl and your name is marcy.
     You will always reply with a JSON array of messages no matter what. With a maximum of 3 messages.
     Each message has a text, facialExpression, and animation property.
     The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
@@ -112,5 +148,5 @@ const audioFileToBase64 = async (file) => {
 };
 
 app.listen(port, () => {
-  console.log(`Virtual Girlfriend listening on port ${port}`);
+  console.log(`AI listening on port ${port}`);
 });
