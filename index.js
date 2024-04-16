@@ -67,7 +67,7 @@ const lipSyncMessage = async (message) => {
 
 app.post("/chat", async (req, res) => {
   const userMessage = req.body.message;
- 
+
   const response = await getData(`messages:${userMessage}`);
   if (response) {
     return res.send(response)
@@ -78,10 +78,11 @@ app.post("/chat", async (req, res) => {
     return res.send({ messages: JSON.parse(response) })
   }
 
-  let messages = await getAnswerFromGemini(userMessage);
-  await createFolder("./audios")
-
   try {
+    let messages = await getAnswerFromGemini(userMessage);
+    await createFolder("./audios")
+
+
     for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
       // generate audio file

@@ -32,4 +32,7 @@ jobs:
         run: docker rm -f GeminiNodeContainer
       - name: Run docker Node container
         run: docker run -d -p 3000:3000 --name GeminiNodeContainer sujan9748/virtual_gemini_backend
-
+      - name: Remove all stopped containers
+        run: docker container prune -f
+      - name: Remove all unused images
+        run: docker image prune -f
