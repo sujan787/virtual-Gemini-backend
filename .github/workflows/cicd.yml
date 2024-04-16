@@ -20,7 +20,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: aws-ec2
+    runs-on: self-hosted
     steps:
       - name: Remove all stopped containers
         run: docker container prune -f
@@ -29,7 +29,7 @@ jobs:
       - name: Pull Node Image from the Docker Hub
         run: docker pull sujan9748/virtual_gemini_backend:latest
       - name: Delete Old Node Container
-        run: docker rm -f nodeContainer
+        run: docker rm -f GeminiNodeContainer
       - name: Run docker Node container
-        run: docker run -d -p 3002:3000 --name nodeContainer sujan9748/virtual_gemini_backend
+        run: docker run -d -p 3000:3000 --name GeminiNodeContainer sujan9748/virtual_gemini_backend
 
