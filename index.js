@@ -78,8 +78,10 @@ app.post("/chat", async (req, res) => {
     return res.send({ messages: JSON.parse(response) })
   }
 
+  let messages;
+  
   try {
-    let messages = await getAnswerFromGemini(userMessage);
+    messages = await getAnswerFromGemini(userMessage);
     await createFolder("./audios")
 
 
@@ -109,7 +111,7 @@ app.post("/chat", async (req, res) => {
   // });
 
   await deleteFiles('./audios')
-  await setData(`messages:${userMessage}`, { messages }, 3600)
+  await setData(`messages:${userMessage}`, { messages: messages }, 3600)
   res.send({ messages });
 });
 
