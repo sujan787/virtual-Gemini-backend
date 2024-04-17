@@ -8,7 +8,7 @@ import voice from "elevenlabs-node";
 import os from "os"
 import path from 'path';
 import { getData, setData } from "./services/redis_service.js";
-
+import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 const genAI = new GoogleGenerativeAI("AIzaSyApGW9OFoJC9q87xVqedKwqqR2AM82Qfg4");
@@ -37,13 +37,13 @@ const execCommand = (command) => {
   });
 };
 
-const lipSyncMessage = async (message) => {
+const lipSyncMessage = async (message, folderPath) => {
   const time = new Date().getTime();
 
   console.log(`Starting uu conversion for message ${message}`);
 
   await execCommand(
-    `ffmpeg -y -i audios/message_${message}.mp3 audios/message_${message}.wav`
+    `ffmpeg -y -i ${folderPath}/message_${message}.mp3 ${folderPath}/message_${message}.wav`
     // -y to overwrite the file
   );
 
@@ -51,13 +51,13 @@ const lipSyncMessage = async (message) => {
 
   if (os.platform() === 'linux') {
     await execCommand(
-      `./bin/rhubarb-l/rhubarb -f json -o audios/message_${message}.json audios/message_${message}.wav -r phonetic`
+      `./bin/rhubarb-l/rhubarb -f json -o ${folderPath}/message_${message}.json ${folderPath}/message_${message}.wav -r phonetic`
     );
   }
 
   if (os.platform() === 'win32') {
     await execCommand(
-      `cd ./bin/rhubarb-w && rhubarb.exe -f json -o ../../audios/message_${message}.json ../../audios/message_${message}.wav -r phonetic`
+      `cd ./bin/rhubarb-w && rhubarb.exe -f json -o ../../${folderPath}/message_${message}.json ../../${folderPath}/message_${message}.wav -r phonetic`
     );
   }
 
@@ -66,9 +66,11 @@ const lipSyncMessage = async (message) => {
 };
 
 app.post("/chat", async (req, res) => {
-  const userMessage = req.body.message;
+  let userMessage = req.body.message;
+  userMessage = userMessage.replace(/\s+/g, ' ')
 
   const response = await getData(`messages:${userMessage}`);
+
   if (response) {
     return res.send(response)
   }
@@ -79,23 +81,24 @@ app.post("/chat", async (req, res) => {
   }
 
   let messages;
-  
-  try {
-    messages = await getAnswerFromGemini(userMessage);
-    await createFolder("./audios")
+  const folderPath = `audios/${uuidv4()}`;
 
+  try {
+    if (!userMessage.length) throw new Error('Empty message');
+    messages = await getAnswerFromGemini(userMessage);
+    await createFolder(folderPath)
 
     for (let i = 0; i < messages.length; i++) {
       const message = messages[i];
       // generate audio file
-      const fileName = `audios/message_${i}.mp3`; // The name of your audio file
+      const fileName = `${folderPath}/message_${i}.mp3`; // The name of your audio file
       const textInput = message.text; // The text you wish to convert to speech
       await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput);
       // generate lipsync
-      await lipSyncMessage(i);
+      await lipSyncMessage(i, folderPath);
 
       message.audio = await audioFileToBase64(fileName);
-      message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
+      message.lipsync = await readJsonTranscript(`${folderPath}/message_${i}.json`);
     }
   } catch (error) {
     const response = await fs.readFile("raw-json/sorry.json", "utf8")
@@ -110,7 +113,7 @@ app.post("/chat", async (req, res) => {
   //   console.log('Data saved successfully!');
   // });
 
-  await deleteFiles('./audios')
+  await deleteFiles(folderPath)
   await setData(`messages:${userMessage}`, { messages: messages }, 3600)
   res.send({ messages });
 });
@@ -145,6 +148,7 @@ const deleteFiles = async (folderPath) => {
       console.log(`Deleted ${filePath}`);
     }
 
+    // await fs.rm(folderPath, { recursive: true })
     console.log('All files deleted successfully');
   } catch (error) {
     console.error('Error deleting files:', error);
