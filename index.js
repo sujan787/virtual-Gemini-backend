@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 const genAI = new GoogleGenerativeAI("AIzaSyApGW9OFoJC9q87xVqedKwqqR2AM82Qfg4");
-const elevenLabsApiKey = "a01a1d868e9c23c649cd16fb3f909b0a";
+const elevenLabsApiKey = "36d1236a7092c81fad0373f176246d36";
 const voiceID = "21m00Tcm4TlvDq8ikWAM";
 
 const app = express();
